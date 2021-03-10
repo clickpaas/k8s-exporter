@@ -4,7 +4,7 @@ ENV GOPROXY https://goproxy.cn
 RUN apk update && apk add git go && mkdir /root/go/src -pv && \
     cd /root/go/src/ && \
     git clone https://github.com/clickpaas/k8s-exporter.git && \
-    cd k8s-exporter && go mod vendor && go build . && cjm
+    cd k8s-exporter && go mod vendor && go build .
 
 RUN cd /root/go/src && \
     git clone https://github.com/go-delve/delve && \

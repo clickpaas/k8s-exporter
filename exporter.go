@@ -1,7 +1,6 @@
 package main
 
 import (
-	"clickpaas-exporter/conf"
 	"clickpaas-exporter/pkg/collector"
 	"clickpaas-exporter/pkg/collector/node"
 	"clickpaas-exporter/pkg/storage"
@@ -22,6 +21,7 @@ var (
 	kubeConfig     = pflag.String("kubeConfig", "", "path of kubeConfig")
 
 	configPath = pflag.String("config", "", "the config file")
+	k8scluster = pflag.String("k8scluster", "dev", "k8s cluster ")
 	// special options
 )
 
@@ -41,7 +41,7 @@ func main() {
 	}()
 	pflag.Parse()
 
-	crConfig := conf.NewConfig(*configPath)
+	//crConfig := conf.NewConfig(*configPath)
 
 	if err := buildKubeConfig(*masterUrl, *kubeConfig); err != nil {
 		logrus.Panicf("create k8s config failed, %s", err)
@@ -70,7 +70,7 @@ func main() {
 	logrus.Infof("crontab start")
 
 	collectorHandler := collector.NewCollectorHandler(false)
-	collectorHandler.MustRegister(node.NewNodeCollector(cacheStorage, crConfig))
+	collectorHandler.MustRegister(node.NewNodeCollector(cacheStorage, *k8scluster))
 
 	mux := http.DefaultServeMux
 	mux.HandleFunc("/health", func(writer http.ResponseWriter, request *http.Request) {

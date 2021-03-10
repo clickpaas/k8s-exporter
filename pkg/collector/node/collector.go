@@ -1,7 +1,6 @@
 package node
 
 import (
-	"clickpaas-exporter/conf"
 	"clickpaas-exporter/pkg/storage"
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -9,7 +8,6 @@ import (
 const (
 	NameSpace  = "k8sexporter"
 	SubSystem  = "node"
-	K8sCluster = "dev"
 )
 
 type nodeCollector struct {
@@ -36,20 +34,20 @@ type nodeCollector struct {
 
 }
 
-func NewNodeCollector(nodeCache *storage.CacheStorage, config *conf.Config) *nodeCollector {
+func NewNodeCollector(nodeCache *storage.CacheStorage, k8scluster string) *nodeCollector {
 	collector := &nodeCollector{nodeCache: nodeCache}
 	collector.nodeMemTotalMachine = prometheus.NewDesc(
-		prometheus.BuildFQName(NameSpace, SubSystem, "memory_total"), "machinery total memory", []string{"node"}, map[string]string{"k8scluster": config.Cluster})
+		prometheus.BuildFQName(NameSpace, SubSystem, "memory_total"), "machinery total memory", []string{"node"}, map[string]string{"k8scluster":k8scluster})
 	collector.nodeMemAllocated = prometheus.NewDesc(
-		prometheus.BuildFQName(NameSpace, SubSystem, "memory_allocated"), "allocated by k8s", []string{"node"}, map[string]string{"k8scluster": config.Cluster})
+		prometheus.BuildFQName(NameSpace, SubSystem, "memory_allocated"), "allocated by k8s", []string{"node"}, map[string]string{"k8scluster": k8scluster})
 	collector.nodeMemAllocatable = prometheus.NewDesc(
-		prometheus.BuildFQName(NameSpace, SubSystem, "memory_allocatable"), "allocatable ", []string{"node"}, map[string]string{"k8scluster": config.Cluster})
+		prometheus.BuildFQName(NameSpace, SubSystem, "memory_allocatable"), "allocatable ", []string{"node"}, map[string]string{"k8scluster": k8scluster})
 	collector.nodeMemCapacity = prometheus.NewDesc(
-		prometheus.BuildFQName(NameSpace, SubSystem, "memory_capacity"), "capacity", []string{"node"}, map[string]string{"k8scluster": config.Cluster})
+		prometheus.BuildFQName(NameSpace, SubSystem, "memory_capacity"), "capacity", []string{"node"}, map[string]string{"k8scluster": k8scluster})
 	collector.nodeMemAllocatablePercent = prometheus.NewDesc(
-		prometheus.BuildFQName(NameSpace, SubSystem, "memory_allocatable_percent"), "allOcateable/total", []string{"node"}, map[string]string{"k8scluster": config.Cluster})
+		prometheus.BuildFQName(NameSpace, SubSystem, "memory_allocatable_percent"), "allOcateable/total", []string{"node"}, map[string]string{"k8scluster": k8scluster})
 	collector.nodeMemAllocatedPercent = prometheus.NewDesc(
-		prometheus.BuildFQName(NameSpace, SubSystem, "memory_allocated_percent"), "allocated / total", []string{"node"}, map[string]string{"k8scluster": config.Cluster})
+		prometheus.BuildFQName(NameSpace, SubSystem, "memory_allocated_percent"), "allocated / total", []string{"node"}, map[string]string{"k8scluster": k8scluster})
 	return collector
 }
 
