@@ -7,12 +7,14 @@ import (
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 )
 
 const (
 	DefaultAllocatedIfNodeSet = 1024*1024 * 2
 )
+
 
 // nodeInformationTask
 type nodeInformationTask struct {
@@ -98,12 +100,18 @@ func(t *nodeInformationTask)RunTask(){
 // getAllNodeMachineryInformation
 func (t *nodeInformationTask)getAllNodeMachineryInformation()([]k8sNodeInformation,error){
 	retK8Node := []k8sNodeInformation{}
-	nodes,err := t.kubeClient.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 
+	nodes,err := t.kubeClient.CoreV1().Nodes().List(context.TODO(),
+		metav1.ListOptions{LabelSelector: labels.SelectorFromSet(map[string]string{"service": "USER_LABEL_VALUE", "TESTENV": "HOSTENVTYPE"}).String()})
 	if err != nil{
 		return nil, err
 	}
 	for _, node  := range nodes.Items{
+
+		// if node is in Unschedulable ,then skip this node
+		if node.Spec.Unschedulable {
+			continue
+		}
 		var nodeInternalIp string
 		for _,adr := range node.Status.Addresses{
 			if adr.Type == "InternalIP"{
@@ -117,6 +125,7 @@ func (t *nodeInformationTask)getAllNodeMachineryInformation()([]k8sNodeInformati
 			memAllocatable: node.Status.Allocatable.Memory().Value() / 1024,
 		})
 	}
+
 	return retK8Node, nil
 }
 
@@ -146,6 +155,7 @@ func (t *nodeInformationTask)getAllPodInformation()(map[string][]podInformation,
 		} else {
 			retPodInfo[pod.Spec.NodeName] = append(retPodInfo[pod.Spec.NodeName], podinfo)
 		}
+
 	}
 	return retPodInfo, err
 }

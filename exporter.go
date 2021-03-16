@@ -36,9 +36,7 @@ func init() {
 }
 
 func main() {
-	go func() {
-		logrus.Println(http.ListenAndServe("localhost:9999", nil))
-	}()
+
 	pflag.Parse()
 
 	//crConfig := conf.NewConfig(*configPath)
