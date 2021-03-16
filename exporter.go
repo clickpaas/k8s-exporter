@@ -51,12 +51,7 @@ func main() {
 	}
 
 	cacheStorage := storage.NewCacheStorage()
-	cacheStorage.Update("haha", storage.MemoryRecord{
-		Total:       0,
-		Allocated:   0,
-		Capacity:    0,
-		Allocatable: 0,
-	})
+	
 
 	nodeInformationTask := task.NewNodeInformationTask(kubeClient, cacheStorage)
 
